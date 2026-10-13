@@ -1,0 +1,358 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: en_US\n"
+
+msgid "plugins.generic.aiDeclaration.displayName"
+msgstr "AI Transparency Declaration"
+
+msgid "plugins.generic.aiDeclaration.description"
+msgstr "Integrates an AI transparency declaration form into submission step 3, using the declarador.usoeticoia.org API. Displays the declaration on the published article page."
+
+# ---- Settings ----
+
+msgid "plugins.generic.aiDeclaration.settings.description"
+msgstr "Configure the declarador.usoeticoia.org integration to generate AI transparency declarations."
+
+msgid "plugins.generic.aiDeclaration.settings.declaradorUrl"
+msgstr "Declarador server URL"
+
+msgid "plugins.generic.aiDeclaration.settings.declaradorUrl.description"
+msgstr "Domain of the Declarador instance to use. Leave empty to use https://declarador.usoeticoia.org. Example for a self-hosted server: https://my-declarador.example.org"
+
+msgid "plugins.generic.aiDeclaration.settings.apiKey"
+msgstr "declarador.usoeticoia.org API Key"
+
+msgid "plugins.generic.aiDeclaration.settings.apiKey.description"
+msgstr "64-character key provided by the declarador.usoeticoia.org administrator."
+
+msgid "plugins.generic.aiDeclaration.settings.requireDeclaration"
+msgstr "Require declaration on all submissions"
+
+msgid "plugins.generic.aiDeclaration.settings.testConnection"
+msgstr "Test connection"
+
+msgid "plugins.generic.aiDeclaration.settings.testConnection.testing"
+msgstr "Testing…"
+
+msgid "plugins.generic.aiDeclaration.settings.testConnection.hint"
+msgstr "Verify that OJS can reach the Declarador server with the configured URL and API Key."
+
+# ---- Form (step 3) ----
+
+msgid "plugins.generic.aiDeclaration.form.title"
+msgstr "AI Transparency Declaration"
+
+msgid "plugins.generic.aiDeclaration.form.intro"
+msgstr "Indicate whether you used generative artificial intelligence tools in preparing this work."
+
+msgid "plugins.generic.aiDeclaration.form.aiUsedYes"
+msgstr "Yes, I used generative AI"
+
+msgid "plugins.generic.aiDeclaration.form.aiUsedNo"
+msgstr "No, I did not use generative AI"
+
+msgid "plugins.generic.aiDeclaration.form.aiUsedExisting"
+msgstr "I already have a declaration (enter ID)"
+
+msgid "plugins.generic.aiDeclaration.form.noAiConfirm"
+msgstr "You declare that you have not used generative artificial intelligence tools in preparing this work."
+
+msgid "plugins.generic.aiDeclaration.form.existingDeclarationId"
+msgstr "ID or hash of your existing declaration"
+
+msgid "plugins.generic.aiDeclaration.form.existingDeclarationId.hint"
+msgstr "Enter the 8-character ID or the 16-character verification hash of a declaration already created on declarador.usoeticoia.org. It will be verified automatically when you save."
+
+msgid "plugins.generic.aiDeclaration.form.existingDeclarationId.placeholder"
+msgstr "E.g.: AB12CD34 or ABCDEF0123456789"
+
+msgid "plugins.generic.aiDeclaration.form.usageTypes"
+msgstr "Types of AI use"
+
+msgid "plugins.generic.aiDeclaration.form.customUsageType.placeholder"
+msgstr "Describe the AI use not listed above"
+
+msgid "plugins.generic.aiDeclaration.form.aiTool"
+msgstr "AI tool used"
+
+msgid "plugins.generic.aiDeclaration.form.aiTool.name"
+msgstr "Name"
+
+msgid "plugins.generic.aiDeclaration.form.aiTool.version"
+msgstr "Version (optional)"
+
+msgid "plugins.generic.aiDeclaration.form.aiTool.provider"
+msgstr "Provider (optional)"
+
+msgid "plugins.generic.aiDeclaration.form.selectAnOption"
+msgstr "Select an option"
+
+msgid "plugins.generic.aiDeclaration.form.aiTool.month"
+msgstr "Month of use"
+
+msgid "plugins.generic.aiDeclaration.form.aiTool.year"
+msgstr "Year of use"
+
+msgid "plugins.generic.aiDeclaration.form.specificPurpose"
+msgstr "Specific purpose of use"
+
+msgid "plugins.generic.aiDeclaration.form.specificPurpose.placeholder"
+msgstr "Describe how you used the AI tool in this work"
+
+msgid "plugins.generic.aiDeclaration.form.prompts"
+msgstr "Prompts used"
+
+msgid "plugins.generic.aiDeclaration.form.prompt.placeholder"
+msgstr "Write the prompt or instruction you sent to the AI"
+
+msgid "plugins.generic.aiDeclaration.form.prompt.add"
+msgstr "Add prompt"
+
+msgid "plugins.generic.aiDeclaration.form.prompt.remove"
+msgstr "Remove prompt"
+
+msgid "plugins.generic.aiDeclaration.form.contentUseModes"
+msgstr "Mode of integration of generated content (optional)"
+
+msgid "plugins.generic.aiDeclaration.form.customContentUseMode.placeholder"
+msgstr "Describe the integration mode not listed above"
+
+msgid "plugins.generic.aiDeclaration.form.contentUseContext"
+msgstr "Additional context on content use (optional)"
+
+msgid "plugins.generic.aiDeclaration.form.contentUseContext.placeholder"
+msgstr "Additional information on how the generated content was integrated"
+
+msgid "plugins.generic.aiDeclaration.form.humanReview.level"
+msgstr "Human review level"
+
+msgid "plugins.generic.aiDeclaration.form.humanReview.reviewerName"
+msgstr "Reviewer name"
+
+msgid "plugins.generic.aiDeclaration.form.humanReview.reviewerRole"
+msgstr "Reviewer role"
+
+msgid "plugins.generic.aiDeclaration.form.humanReview.reviewerRole.placeholder"
+msgstr "E.g.: Thesis supervisor, Editor"
+
+msgid "plugins.generic.aiDeclaration.form.license"
+msgstr "Work license (optional)"
+
+# ---- Usage types ----
+
+msgid "plugins.generic.aiDeclaration.usageType.draft"
+msgstr "Draft generation — AI wrote a complete first version"
+
+msgid "plugins.generic.aiDeclaration.usageType.coauthor"
+msgstr "Substantive co-creation — Iterative human-AI collaboration"
+
+msgid "plugins.generic.aiDeclaration.usageType.writing-support"
+msgstr "Style assistance — Form improvement without altering content"
+
+msgid "plugins.generic.aiDeclaration.usageType.ideation"
+msgstr "Ideation and structure — Brainstorming, outlines, frameworks"
+
+msgid "plugins.generic.aiDeclaration.usageType.analysis"
+msgstr "Data analysis — Summarisation, extraction, synthesis"
+
+msgid "plugins.generic.aiDeclaration.usageType.coding"
+msgstr "Code generation — Scripts, algorithms, debugging"
+
+msgid "plugins.generic.aiDeclaration.usageType.translation"
+msgstr "Technical translation — Academic texts across languages"
+
+msgid "plugins.generic.aiDeclaration.usageType.review"
+msgstr "Review simulation — AI as a simulated peer reviewer"
+
+msgid "plugins.generic.aiDeclaration.usageType.other"
+msgstr "Other unlisted use"
+
+# ---- Human review levels ----
+
+msgid "plugins.generic.aiDeclaration.humanReview.level.0"
+msgstr "Level 0: No review — Content used directly (HIGH RISK)"
+
+msgid "plugins.generic.aiDeclaration.humanReview.level.1"
+msgstr "Level 1: Surface review — Quick coherence check"
+
+msgid "plugins.generic.aiDeclaration.humanReview.level.2"
+msgstr "Level 2: Grammar review — Error correction"
+
+msgid "plugins.generic.aiDeclaration.humanReview.level.3"
+msgstr "Level 3: Selective verification — Spot-checking of key data"
+
+msgid "plugins.generic.aiDeclaration.humanReview.level.4"
+msgstr "Level 4: Documentary cross-checking — Verification against sources"
+
+msgid "plugins.generic.aiDeclaration.humanReview.level.5"
+msgstr "Level 5: Expert validation — Deep review by subject expert"
+
+msgid "plugins.generic.aiDeclaration.humanReview.level.6"
+msgstr "Level 6: Critical and ethical review — Bias, originality, and ethics analysis (GOLD)"
+
+# ---- Workflow tab ----
+
+msgid "plugins.generic.aiDeclaration.workflow.tab"
+msgstr "AI Declaration"
+
+msgid "plugins.generic.aiDeclaration.workflow.usedYes"
+msgstr "AI used"
+
+msgid "plugins.generic.aiDeclaration.workflow.usedNo"
+msgstr "No AI used"
+
+msgid "plugins.generic.aiDeclaration.workflow.declarationId"
+msgstr "Declaration ID"
+
+msgid "plugins.generic.aiDeclaration.workflow.declarationIdEdit"
+msgstr "Declaration ID (editable)"
+
+msgid "plugins.generic.aiDeclaration.workflow.validationHash"
+msgstr "Validation hash"
+
+msgid "plugins.generic.aiDeclaration.workflow.declarationUrl"
+msgstr "Declaration URL"
+
+msgid "plugins.generic.aiDeclaration.workflow.save"
+msgstr "Save changes"
+
+msgid "plugins.generic.aiDeclaration.workflow.saved"
+msgstr "Changes saved successfully"
+
+msgid "plugins.generic.aiDeclaration.workflow.noDeclaration"
+msgstr "No AI declaration has been registered for this publication."
+
+msgid "plugins.generic.aiDeclaration.workflow.findExisting"
+msgstr "Find existing declaration by ID or hash"
+
+msgid "plugins.generic.aiDeclaration.workflow.linkDeclaration"
+msgstr "Link this declaration"
+
+msgid "plugins.generic.aiDeclaration.workflow.manualRegister"
+msgstr "Register manually"
+
+msgid "plugins.generic.aiDeclaration.workflow.errorPublished"
+msgstr "Cannot edit: the publication is currently published. Unpublish it first."
+
+msgid "plugins.generic.aiDeclaration.form.aiUsed"
+msgstr "Was AI used?"
+
+# ---- Validation errors ----
+
+msgid "plugins.generic.aiDeclaration.error.aiUsedRequired"
+msgstr "You must indicate whether you used AI tools in this work."
+
+msgid "plugins.generic.aiDeclaration.error.usageTypesRequired"
+msgstr "Select at least one type of AI use."
+
+msgid "plugins.generic.aiDeclaration.error.aiToolNameRequired"
+msgstr "Enter the name of the AI tool used."
+
+msgid "plugins.generic.aiDeclaration.error.dateMonthRequired"
+msgstr "Select the month you used the AI tool."
+
+msgid "plugins.generic.aiDeclaration.error.dateYearRequired"
+msgstr "Select the year you used the AI tool."
+
+msgid "plugins.generic.aiDeclaration.error.specificPurposeRequired"
+msgstr "Describe the specific purpose of the AI use."
+
+msgid "plugins.generic.aiDeclaration.error.promptRequired"
+msgstr "Include at least one prompt used."
+
+msgid "plugins.generic.aiDeclaration.error.existingDeclarationIdRequired"
+msgstr "Enter the ID or hash of your existing declaration."
+
+msgid "plugins.generic.aiDeclaration.error.existingDeclarationNotFound"
+msgstr "No declaration found with that identifier. Please check the ID or hash and try again."
+
+# ---- Article view ----
+
+msgid "plugins.generic.aiDeclaration.article.sectionTitle"
+msgstr "AI Declaration"
+
+msgid "plugins.generic.aiDeclaration.article.aiUsed"
+msgstr "This work declares the use of generative AI"
+
+msgid "plugins.generic.aiDeclaration.article.aiNotUsed"
+msgstr "No generative AI use declared"
+
+msgid "plugins.generic.aiDeclaration.article.viewDeclaration"
+msgstr "View full declaration"
+
+msgid "plugins.generic.aiDeclaration.article.verificationHash"
+msgstr "Verification hash"
+
+msgid "plugins.generic.aiDeclaration.article.poweredBy"
+msgstr "Declaration generated with"
+
+# ---- Action buttons ----
+
+msgid "plugins.generic.aiDeclaration.form.action.create"
+msgstr "Create declaration"
+
+msgid "plugins.generic.aiDeclaration.form.action.creating"
+msgstr "Creating…"
+
+msgid "plugins.generic.aiDeclaration.form.action.registerNoAi"
+msgstr "Register no-AI declaration"
+
+msgid "plugins.generic.aiDeclaration.form.action.registering"
+msgstr "Registering…"
+
+msgid "plugins.generic.aiDeclaration.form.action.find"
+msgstr "Find declaration"
+
+msgid "plugins.generic.aiDeclaration.form.action.searching"
+msgstr "Searching…"
+
+msgid "plugins.generic.aiDeclaration.form.action.change"
+msgstr "Change"
+
+msgid "plugins.generic.aiDeclaration.form.action.successPrefix"
+msgstr "Declaration registered:"
+
+# ---- Additional validation errors ----
+
+msgid "plugins.generic.aiDeclaration.error.declarationNotConfirmed"
+msgstr "You must register the declaration before saving. Use the 'Create declaration', 'Register no-AI declaration', or 'Find declaration' button."
+
+msgid "plugins.generic.aiDeclaration.error.noApiKey"
+msgstr "No API Key configured. Please configure the plugin settings first."
+
+msgid "plugins.generic.aiDeclaration.error.apiUnavailable"
+msgstr "The declaration server is unavailable"
+
+msgid "plugins.generic.aiDeclaration.error.apiUnavailableHint"
+msgstr "After several failed attempts, you may continue the submission. An editor will register the declaration later from the editorial panel."
+
+msgid "plugins.generic.aiDeclaration.form.action.continueWithoutDeclaration"
+msgstr "Continue without declaration (editor will register it)"
+
+msgid "plugins.generic.aiDeclaration.form.bypass.pending"
+msgstr "Pending: the editor will register the declaration"
+
+msgid "plugins.generic.aiDeclaration.workflow.bypassNotice"
+msgstr "This publication has a pending declaration. The declaration service was unavailable during submission. Please register the declaration below."
+
+msgid "plugins.generic.aiDeclaration.workflow.addDeclarationTitle"
+msgstr "Register AI Declaration"
+
+msgid "plugins.generic.aiDeclaration.workflow.saving"
+msgstr "Saving…"
+
+msgid "plugins.generic.aiDeclaration.workflow.addSuccess"
+msgstr "Declaration registered. The page will reload..."
+
+msgid "plugins.generic.aiDeclaration.workflow.aiUsedRequired"
+msgstr "You must indicate whether AI was used in this work."
+
+msgid "plugins.generic.aiDeclaration.common.optional"
+msgstr "optional"
