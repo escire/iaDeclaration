@@ -2,6 +2,7 @@
  * Copyright 2026 eScire
  * Developed by eScire, with the collaboration of:
  *   - Gustavo Casiano Leon
+ *   - Rebeca Maria Sirbu
  * Licensed under the Apache License, Version 2.0 (see LICENSE and NOTICE).
  *}
 {**
@@ -32,13 +33,6 @@
                  class="ai-declaration-badge-img" />
         {/if}
 
-        {if $aiDeclaration_hash}
-        <p class="ai-declaration-badge-hash">
-            <span class="ai-declaration-badge-hash-label">{translate key="plugins.generic.aiDeclaration.article.verificationHash"}:</span>
-            <code>{$aiDeclaration_hash|escape}</code>
-        </p>
-        {/if}
-
     {else}
 
         {* ---- NO AI used badge — link to declaration URL when available ---- *}
@@ -55,6 +49,13 @@
                  class="ai-declaration-badge-img" />
         {/if}
 
+    {/if}
+
+    {if $aiDeclaration_hash}
+    <p class="ai-declaration-badge-hash">
+        <span class="ai-declaration-badge-hash-label">{translate key="plugins.generic.aiDeclaration.article.verificationHash"}:</span>
+        <code>{$aiDeclaration_hash|escape}</code>
+    </p>
     {/if}
 
 </div>

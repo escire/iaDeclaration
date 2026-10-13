@@ -2,6 +2,7 @@
  * Copyright 2026 eScire
  * Developed by eScire, with the collaboration of:
  *   - Gustavo Casiano Leon
+ *   - Rebeca Maria Sirbu
  * Licensed under the Apache License, Version 2.0 (see LICENSE and NOTICE).
  */
 /* =============================================================
@@ -59,6 +60,18 @@
 /* Fields within the sub-form */
 .ai-declaration-field {
     margin-bottom: 1.25em;
+}
+
+/* OJS 3.4: pkpFormField__input needs explicit width when not inside PKP's form grid */
+#aiDeclarationSection .pkpFormField__input {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* OJS 3.4: pkpFormFieldLabel styling */
+#aiDeclarationSection .pkpFormFieldLabel {
+    display: block;
+    margin-bottom: 0.35em;
 }
 
 .ai-declaration-checkboxes {

@@ -2,6 +2,7 @@
  * Copyright 2026 eScire
  * Developed by eScire, with the collaboration of:
  *   - Gustavo Casiano Leon
+ *   - Rebeca Maria Sirbu
  * Licensed under the Apache License, Version 2.0 (see LICENSE and NOTICE).
  *}
 <script>

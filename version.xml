@@ -1,15 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE version SYSTEM "../../../lib/pkp/dtd/pluginVersion.dtd">
-<!--
-  * plugins/generic/aiDeclaration/version.xml
-  *
-  * Plugin version information.
-  -->
 <version>
 	<application>aiDeclaration</application>
 	<type>plugins.generic</type>
-	<release>1.0.0.0</release>
-	<date>2026-02-18</date>
+	<release>2.0.0.0</release>
+	<date>2026-03-27</date>
 	<lazy-load>1</lazy-load>
 	<class>AiDeclarationPlugin</class>
 </version>

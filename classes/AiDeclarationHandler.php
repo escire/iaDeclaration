@@ -3,26 +3,26 @@
  * Copyright 2026 eScire
  * Developed by eScire, with the collaboration of:
  *   - Gustavo Casiano Leon
+ *   - Rebeca Maria Sirbu
  * Licensed under the Apache License, Version 2.0 (see LICENSE and NOTICE).
  */
 
 /**
- * @file plugins/generic/aiDeclaration/classes/AiDeclarationHandler.inc.php
+ * @file plugins/generic/aiDeclaration/classes/AiDeclarationHandler.php
  *
  * @class AiDeclarationHandler
  * @ingroup plugins_generic_aiDeclaration
  *
  * Component handler for AJAX endpoints used by the AI Declaration plugin.
- * Accessible by any logged-in user (authors during submission step 3).
- *
- * URL pattern (path info enabled):
- *   .../index.php/{journal}/$$$call$$$/plugins/generic/ai-declaration/classes/ai-declaration/manage
- *
- * The LoadComponentHandler hook in AiDeclarationPlugin intercepts this component
- * path and allows instantiation of this class.
+ * Accessible by any logged-in user (authors during the submission wizard).
  */
 
-import('lib.pkp.classes.handler.PKPHandler');
+namespace APP\plugins\generic\aiDeclaration\classes;
+
+use PKP\core\JSONMessage;
+use PKP\handler\PKPHandler;
+use PKP\plugins\PluginRegistry;
+use PKP\security\authorization\UserRequiredPolicy;
 
 class AiDeclarationHandler extends PKPHandler
 {
@@ -31,7 +31,6 @@ class AiDeclarationHandler extends PKPHandler
      */
     public function authorize($request, &$args, $roleAssignments)
     {
-        import('lib.pkp.classes.security.authorization.UserRequiredPolicy');
         $this->addPolicy(new UserRequiredPolicy($request));
         return parent::authorize($request, $args, $roleAssignments);
     }
@@ -43,14 +42,12 @@ class AiDeclarationHandler extends PKPHandler
     public function manage($args, $request)
     {
         if (!$request->checkCSRF()) {
-            import('lib.pkp.classes.core.JSONMessage');
-            return new JSONMessage(false, array('error' => 'Invalid CSRF token'));
+            return new JSONMessage(false, ['error' => 'Invalid CSRF token']);
         }
 
         $plugin = PluginRegistry::getPlugin('generic', 'aideclarationplugin');
         if (!$plugin) {
-            import('lib.pkp.classes.core.JSONMessage');
-            return new JSONMessage(false, array('error' => 'Plugin not available'));
+            return new JSONMessage(false, ['error' => 'Plugin not available']);
         }
 
         return $plugin->manage($args, $request);

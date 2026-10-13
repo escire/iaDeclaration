@@ -3,33 +3,40 @@
  * Copyright 2026 eScire
  * Developed by eScire, with the collaboration of:
  *   - Gustavo Casiano Leon
+ *   - Rebeca Maria Sirbu
  * Licensed under the Apache License, Version 2.0 (see LICENSE and NOTICE).
  */
 
 /**
- * @file plugins/generic/aiDeclaration/form/AiDeclarationSettingsForm.inc.php
+ * @file plugins/generic/aiDeclaration/form/AiDeclarationSettingsForm.php
  *
  * @class AiDeclarationSettingsForm
  * @ingroup plugins_generic_aiDeclaration
  *
- * Plugin settings form: API key and require/optional declaration toggle.
+ * Plugin settings form: API key, declarador URL, and require/optional toggle.
  */
 
-import('lib.pkp.classes.form.Form');
+namespace APP\plugins\generic\aiDeclaration\form;
+
+use APP\template\TemplateManager;
+use PKP\form\Form;
+use PKP\form\validation\FormValidatorCSRF;
+use PKP\form\validation\FormValidatorPost;
 
 class AiDeclarationSettingsForm extends Form
 {
     /** @var int */
     public $contextId;
 
-    /** @var AiDeclarationPlugin */
+    /** @var \PKP\plugins\Plugin */
     public $plugin;
 
     public function __construct($plugin, $contextId)
     {
         $this->contextId = $contextId;
-        $this->plugin = $plugin;
+        $this->plugin    = $plugin;
         parent::__construct($plugin->getTemplateResource('settingsForm.tpl'));
+        $this->addCheck(new FormValidatorPost($this));
         $this->addCheck(new FormValidatorCSRF($this));
     }
 
@@ -41,18 +48,18 @@ class AiDeclarationSettingsForm extends Form
             $declaradorUrl = 'https://declarador.usoeticoia.org';
         }
 
-        $templateMgr->assign(array(
+        $templateMgr->assign([
             'pluginName'         => $this->plugin->getName(),
             'declaradorUrl'      => $declaradorUrl,
             'apiKey'             => $this->plugin->getSetting($this->contextId, 'apiKey'),
             'requireDeclaration' => (bool) $this->plugin->getSetting($this->contextId, 'requireDeclaration'),
-        ));
+        ]);
         return parent::fetch($request, $template, $display);
     }
 
     public function readInputData()
     {
-        $this->readUserVars(array('declaradorUrl', 'apiKey', 'requireDeclaration'));
+        $this->readUserVars(['declaradorUrl', 'apiKey', 'requireDeclaration']);
     }
 
     public function execute(...$functionArgs)

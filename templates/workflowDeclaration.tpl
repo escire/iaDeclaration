@@ -2,6 +2,7 @@
  * Copyright 2026 eScire
  * Developed by eScire, with the collaboration of:
  *   - Gustavo Casiano Leon
+ *   - Rebeca Maria Sirbu
  * Licensed under the Apache License, Version 2.0 (see LICENSE and NOTICE).
  *}
 {**
@@ -24,7 +25,7 @@
 
 <tab id="aiDeclaration" label="{translate key="plugins.generic.aiDeclaration.workflow.tab"}">
 
-    <div class="ai-declaration-workflow pkp_form" style="max-width:680px;">
+    <div class="ai-declaration-workflow" style="max-width:680px; padding:1rem 0;">
 
         {if $wf_used !== ""}
 
@@ -51,16 +52,16 @@
             </div>
 
             {* Readonly: Hash *}
-            <div class="pkp_form_group" style="margin-bottom:1em;">
-                <label class="pkp_form_label">{translate key="plugins.generic.aiDeclaration.workflow.validationHash"}</label>
+            <div style="margin-bottom:1em;">
+                <label class="pkpFormFieldLabel">{translate key="plugins.generic.aiDeclaration.workflow.validationHash"}</label>
                 <code style="display:block; padding:6px 8px; background:#f5f5f5; border:1px solid #ddd; border-radius:3px; font-size:0.9em; word-break:break-all;">
                     {if $wf_hash}{$wf_hash|escape}{else}&mdash;{/if}
                 </code>
             </div>
 
             {* Editable: URL — always enabled; backend enforces published lock *}
-            <div class="pkp_form_group" style="margin-bottom:1.2em;">
-                <label class="pkp_form_label" for="aiDeclWorkflowUrl">
+            <div style="margin-bottom:1.2em;">
+                <label class="pkpFormFieldLabel" for="aiDeclWorkflowUrl">
                     {translate key="plugins.generic.aiDeclaration.workflow.declarationUrl"}
                 </label>
                 {if $wf_url}
@@ -68,13 +69,13 @@
                         <a href="{$wf_url|escape}" target="_blank" rel="noopener">{$wf_url|escape}</a>
                     </p>
                 {/if}
-                <input type="text" id="aiDeclWorkflowUrl" class="pkp_form_element"
-                    style="width:100%;" value="{$wf_url|escape}"
+                <input type="text" id="aiDeclWorkflowUrl" class="pkpFormField__input"
+                    value="{$wf_url|escape}"
                     placeholder="https://declarador.usoeticoia.org/..." />
             </div>
 
             <div style="display:flex; align-items:center; gap:1em;">
-                <button type="button" id="aiDeclWorkflowSaveBtn" class="pkp_button">
+                <button type="button" id="aiDeclWorkflowSaveBtn" class="pkpButton">
                     {translate key="plugins.generic.aiDeclaration.workflow.save"}
                 </button>
                 <span id="aiDeclWorkflowStatus" style="display:none; font-size:0.9em;"></span>
@@ -93,9 +94,9 @@
                 </h4>
 
                 {* AI used *}
-                <div class="pkp_form_group" style="margin-bottom:1em;">
-                    <label class="pkp_form_label">
-                        {translate key="plugins.generic.aiDeclaration.form.aiUsed"} <span class="req">*</span>
+                <div style="margin-bottom:1em;">
+                    <label class="pkpFormFieldLabel">
+                        {translate key="plugins.generic.aiDeclaration.form.aiUsed"} <span class="pkpFormFieldLabel__required">*</span>
                     </label>
                     <label style="display:inline-flex; align-items:center; gap:6px; margin-right:1.5em; font-weight:normal;">
                         <input type="radio" name="wf_ai_used_add" value="1" />
@@ -108,28 +109,28 @@
                 </div>
 
                 {* URL *}
-                <div class="pkp_form_group" style="margin-bottom:1em;">
-                    <label class="pkp_form_label" for="aiDeclWorkflowAddUrl">
+                <div style="margin-bottom:1em;">
+                    <label class="pkpFormFieldLabel" for="aiDeclWorkflowAddUrl">
                         {translate key="plugins.generic.aiDeclaration.workflow.declarationUrl"}
                     </label>
-                    <input type="text" id="aiDeclWorkflowAddUrl" class="pkp_form_element"
-                        style="width:100%;" value=""
+                    <input type="text" id="aiDeclWorkflowAddUrl" class="pkpFormField__input"
+                        value=""
                         placeholder="https://declarador.usoeticoia.org/..." />
                 </div>
 
                 {* ID (optional — backend fetches hash from API if provided) *}
-                <div class="pkp_form_group" style="margin-bottom:1.2em;">
-                    <label class="pkp_form_label" for="aiDeclWorkflowAddId">
+                <div style="margin-bottom:1.2em;">
+                    <label class="pkpFormFieldLabel" for="aiDeclWorkflowAddId">
                         {translate key="plugins.generic.aiDeclaration.workflow.declarationId"}
                         <span style="font-weight:normal; font-size:0.85em;"> ({translate key="plugins.generic.aiDeclaration.common.optional"})</span>
                     </label>
-                    <input type="text" id="aiDeclWorkflowAddId" class="pkp_form_element"
-                        style="width:100%;" value=""
+                    <input type="text" id="aiDeclWorkflowAddId" class="pkpFormField__input"
+                        value=""
                         placeholder="AB12CD34" />
                 </div>
 
                 <div style="display:flex; align-items:center; gap:1em;">
-                    <button type="button" id="aiDeclWorkflowAddBtn" class="pkp_button"
+                    <button type="button" id="aiDeclWorkflowAddBtn" class="pkpButton"
                         data-text-default="{translate key="plugins.generic.aiDeclaration.workflow.save"|escape:"html"}"
                         data-text-saving="{translate key="plugins.generic.aiDeclaration.workflow.saving"|escape:"html"}">
                         {translate key="plugins.generic.aiDeclaration.workflow.save"}
@@ -152,7 +153,6 @@
         var updateUrl = '{url router=$smarty.const.ROUTE_COMPONENT component=$aiDeclarationComponent op="manage" verb="ajaxUpdateDeclarationMeta" escape=false}';
         var pubId     = {$aiDeclarationWorkflowPubId|intval};
 
-        // ---- Helper: show status message ----
         function showStatus($el, ok, msg) {ldelim}
             var color = ok ? '#27ae60' : '#c0392b';
             var icon  = ok ? '&#10003;' : '&#10007;';
@@ -200,7 +200,7 @@
             {rdelim});
         {rdelim});
 
-        // ---- Save URL ----
+        // ---- Save URL (existing declaration) ----
         $(document).on('click', '#aiDeclWorkflowSaveBtn', function () {ldelim}
             var $btn    = $(this);
             var $status = $('#aiDeclWorkflowStatus');
