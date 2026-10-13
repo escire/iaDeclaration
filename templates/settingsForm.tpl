@@ -45,7 +45,7 @@
         <p style="margin:0 0 0.5em; font-size:0.9em; color:#555;">
             {translate key="plugins.generic.aiDeclaration.settings.testConnection.hint"}
         </p>
-        <button type="button" id="aiDeclarationTestBtn" class="pkp_button">
+        <button type="button" id="aiDeclarationTestBtn" class="pkpButton inline-flex relative items-center gap-x-1 text-lg-semibold text-primary border-light hover:text-hover disabled:text-disabled bg-secondary py-[0.4375rem] px-3 border rounded">
             {translate key="plugins.generic.aiDeclaration.settings.testConnection"}
         </button>
         <div id="aiDeclarationTestResult" style="margin-top:0.75em; font-size:0.88em; display:none;"></div>
@@ -62,7 +62,7 @@
         $.ajax({ldelim}
             url: '{url router=$smarty.const.ROUTE_COMPONENT op="manage" category="generic" plugin=$pluginName verb="testConnection" escape=false}',
             type: 'POST',
-            data: {ldelim} csrfToken: $.pkp.app.csrfToken {rdelim},
+            data: {ldelim} csrfToken: pkp.currentUser.csrfToken {rdelim},
             success: function (data) {ldelim}
                 result.html(data.content).show();
             {rdelim},

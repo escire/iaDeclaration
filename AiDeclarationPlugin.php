@@ -38,7 +38,10 @@ class AiDeclarationPlugin extends GenericPlugin
             Hook::add('TemplateManager::display', [$this, 'addWizardAssets']);
             Hook::add('LoadComponentHandler', [$this, 'setupComponentHandler']);
             Hook::add('TemplateResource::getFilename', [$this, '_overridePluginTemplates']);
-            Hook::add('Template::Workflow::Publication', [$this, 'addDeclarationTabToWorkflow']);
+            // Note: Template::Workflow::Publication was removed in OJS 3.5 (pkp/pkp-lib#10766).
+            // The editorial workflow is now a Vue SPA in the dashboard with no equivalent template hook.
+            // The declaration workflow panel is injected via TemplateManager::display on the dashboard page.
+            Hook::add('TemplateManager::display', [$this, 'addWorkflowAssets']);
             Hook::add('Templates::Article::Details', [$this, 'addDeclarationToArticle']);
         }
 
@@ -298,12 +301,99 @@ class AiDeclarationPlugin extends GenericPlugin
     }
 
     // -------------------------------------------------------------------------
-    // Hook: add "Declaración IA" tab to the Publication panel in workflow
+    // Hook: inject declaration panel into the OJS 3.5 editorial dashboard SPA
     // -------------------------------------------------------------------------
 
     /**
-     * Hook: Template::Workflow::Publication
-     * params: [&$smarty, &$output]
+     * Hook: TemplateManager::display (dashboard/editors.tpl)
+     *
+     * OJS 3.5 removed Template::Workflow::Publication (pkp/pkp-lib#10766) and
+     * replaced the whole editorial workflow with a Vue SPA in the editorial
+     * dashboard. We enqueue CSS + JS here and expose the AJAX endpoint URL via
+     * window.aiDeclarationWorkflowConfig so that workflowDashboard.js can use
+     * a MutationObserver to inject the declaration panel whenever the workflow
+     * sidebar opens.
+     *
+     * params: [templateMgr, &$template, &$output]
+     */
+    public function addWorkflowAssets($hookName, $params)
+    {
+        $template = $params[1];
+        if ($template !== 'dashboard/editors.tpl') {
+            return false;
+        }
+
+        $request     = Application::get()->getRequest();
+        $context     = $request->getContext();
+        $pluginUrl   = $request->getBaseUrl() . '/' . $this->getPluginPath();
+        $templateMgr = PKPTemplateManager::getManager($request);
+
+        $templateMgr->addStyleSheet(
+            'aiDeclarationWorkflow',
+            $pluginUrl . '/assets/css/aiDeclaration.css',
+            ['contexts' => 'backend', 'priority' => PKPTemplateManager::STYLE_SEQUENCE_LATE]
+        );
+        $templateMgr->addJavaScript(
+            'aiDeclarationWorkflow',
+            $pluginUrl . '/assets/js/workflowDashboard.js?v=6',
+            ['contexts' => 'backend', 'priority' => PKPTemplateManager::STYLE_SEQUENCE_LATE]
+        );
+
+        $handlerComponent = str_replace('/', '.', $this->getPluginPath())
+            . '.classes.AiDeclarationHandler';
+
+        $updateUrl = $request->getDispatcher()->url(
+            $request,
+            \PKP\core\PKPApplication::ROUTE_COMPONENT,
+            null,
+            $handlerComponent,
+            'manage',
+            null,
+            ['verb' => 'ajaxUpdateDeclarationMeta']
+        );
+
+        $getMetaUrl = $request->getDispatcher()->url(
+            $request,
+            \PKP\core\PKPApplication::ROUTE_COMPONENT,
+            null,
+            $handlerComponent,
+            'manage',
+            null,
+            ['verb' => 'ajaxGetDeclarationMeta']
+        );
+
+        $submissionsApiUrl = $request->getDispatcher()->url(
+            $request,
+            \PKP\core\PKPApplication::ROUTE_API,
+            $context ? $context->getPath() : null,
+            'submissions'
+        );
+
+        // csrfToken is NOT included here — the JS reads it from pkp.currentUser.csrfToken
+        $inlineJs  = 'window.aiDeclarationWorkflowConfig = ' . json_encode([
+            'updateUrl'         => $updateUrl,
+            'getMetaUrl'        => $getMetaUrl,
+            'submissionsApiUrl' => $submissionsApiUrl,
+            'pluginUrl'         => $pluginUrl,
+        ]) . ';';
+
+        $templateMgr->addJavaScript('aiDeclarationWorkflowConfig', $inlineJs, [
+            'inline'   => true,
+            'contexts' => 'backend',
+            'priority' => PKPTemplateManager::STYLE_SEQUENCE_LATE,
+        ]);
+
+        return false;
+    }
+
+    // -------------------------------------------------------------------------
+    // Hook: add "Declaración IA" tab to the Publication panel in workflow
+    // (kept for reference; no longer callable in OJS 3.5)
+    // -------------------------------------------------------------------------
+
+    /**
+     * @deprecated OJS 3.5 removed Template::Workflow::Publication.
+     *             Declaration workflow UI is now handled by addWorkflowAssets().
      */
     public function addDeclarationTabToWorkflow($hookName, $params)
     {
@@ -421,6 +511,9 @@ class AiDeclarationPlugin extends GenericPlugin
             case 'ajaxFindDeclaration':
                 return $this->_handleAjaxFind($request);
 
+            case 'ajaxGetDeclarationMeta':
+                return $this->_handleAjaxGetMeta($request);
+
             case 'ajaxUpdateDeclarationMeta':
                 return $this->_handleAjaxUpdateMeta($request);
 
@@ -432,6 +525,23 @@ class AiDeclarationPlugin extends GenericPlugin
     // -------------------------------------------------------------------------
     // AJAX handlers
     // -------------------------------------------------------------------------
+
+    private function _handleAjaxGetMeta($request)
+    {
+        $user    = $request->getUser();
+        $context = $request->getContext();
+        if (!$user || !$context) {
+            return new JSONMessage(false, ['error' => 'Not authenticated']);
+        }
+
+        $publicationId = (int) $request->getUserVar('publicationId');
+        if (!$publicationId) {
+            return new JSONMessage(false, ['error' => 'Publication ID required']);
+        }
+
+        $settings = $this->_loadDeclarationSettings($publicationId);
+        return new JSONMessage(true, ['settings' => $settings]);
+    }
 
     private function _handleAjaxCreate($request)
     {
@@ -521,6 +631,7 @@ class AiDeclarationPlugin extends GenericPlugin
         if (!$user || !$context) {
             return new JSONMessage(false, ['error' => 'Not authenticated']);
         }
+        /** @var \PKP\security\RoleDAO $roleDao */
         $roleDao = DAORegistry::getDAO('RoleDAO');
         if (!$roleDao->userHasRole($context->getId(), $user->getId(), Role::ROLE_ID_MANAGER) &&
             !$roleDao->userHasRole($context->getId(), $user->getId(), Role::ROLE_ID_SUB_EDITOR)) {

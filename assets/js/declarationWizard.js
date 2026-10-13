@@ -9,11 +9,14 @@
  * declarationWizard.js
  *
  * Handles all interactivity for the AI Declaration form injected into the
- * OJS 3.4 submission wizard review step.
+ * OJS 3.4 / 3.5 submission wizard.
  *
- * This file is loaded via addJavaScript() from TemplateManager::display so it
- * is available in <head> before Vue mounts. All handlers use event delegation
- * on `document` so they work regardless of when the form appears in the DOM.
+ * OJS 3.4 used Vue 2; OJS 3.5 uses Vue 3. The key differences:
+ *   - Vue 3 removed vm.$children and comp.$options._componentTag
+ *   - In Vue 3 the active <step> renders as <div class="pkpStep"> without
+ *     the `hidden` attribute. We locate it via DOM selector instead of
+ *     traversing the component tree.
+ *   - vm.$watch and vm.nextStep are still accessible in Vue 3.
  *
  * Configuration is read from data-* attributes on #aiDeclarationSection:
  *   data-create-url    — AJAX endpoint for creating a declaration
@@ -44,8 +47,8 @@
         var $s = getSection();
         return {
             createUrl:    $s.data('create-url')    || '',
-            findUrl:      $s.data('find-url')      || '',
-            submissionId: $s.data('submission-id') || 0,
+            findUrl:      $s.data('find-url')       || '',
+            submissionId: $s.data('submission-id')  || 0,
             required:     $s.data('required') == '1',
         };
     }
@@ -160,36 +163,35 @@
     }
 
     // ---- Vue integration ----
-    // injectDeclarationForm(vm) is called from root:mounted when the aiDeclaration
-    // step becomes active. The form HTML is pre-rendered server-side and stored in
-    // window.aiDeclarationFormHTML by the PHP hook.
     var _formInjected = false;
 
-    // The PKP <step> component declares `id` as a Vue prop, so Vue does NOT apply
-    // it as an HTML attribute — the root element is <div class="pkpStep"> with NO id.
-    // We must traverse the Vue component tree to locate the right step element.
-    function findStepElement(vm) {
-        var found = null;
-        function walk(comp) {
-            if (found) { return; }
-            if (comp.$options && comp.$options._componentTag === 'step' && comp.id === 'aiDeclaration') {
-                found = comp.$el;
-                return;
-            }
-            (comp.$children || []).forEach(walk);
+    /**
+     * Find the currently active wizard step element.
+     *
+     * OJS 3.4 (Vue 2): We used to traverse vm.$children / comp.$options._componentTag.
+     * OJS 3.5 (Vue 3): vm.$children is removed. We locate the active <step> via DOM:
+     *   - <step> renders as <div class="pkpStep">
+     *   - Active step does NOT have the `hidden` attribute
+     *   - We look inside .submissionWizard__steps
+     */
+    function findActiveStepElement() {
+        // Vue 3 / OJS 3.5 approach: DOM selector
+        var stepEl = document.querySelector('.submissionWizard__steps .pkpStep:not([hidden])');
+        if (stepEl) {
+            return stepEl;
         }
-        walk(vm);
-        return found;
+        // Fallback: any visible pkpStep in the wizard container
+        return document.querySelector('.submissionWizard .pkpStep:not([hidden])');
     }
 
-    function injectDeclarationForm(vm) {
+    function injectDeclarationForm() {
         if (_formInjected || document.getElementById('aiDeclarationSection')) {
             return;
         }
         var html = (typeof window.aiDeclarationFormHTML === 'string') ? window.aiDeclarationFormHTML : '';
         if (!html) { return; }
 
-        var stepEl = findStepElement(vm);
+        var stepEl = findActiveStepElement();
         if (!stepEl) { return; }
 
         // Find the panel container (empty since sections:[]) or fall back to the step element
@@ -303,7 +305,7 @@
         var $ta  = $('<textarea></textarea>')
                     .attr({ name: 'prompt_description[]', rows: 2, placeholder: placeholder })
                     .addClass('pkp_form_element ai-declaration-prompt-input');
-        var $rm  = $('<button type="button">&#x2715;</button>').addClass('pkp_button ai-declaration-remove-prompt');
+        var $rm  = $('<button type="button">&#x2715;</button>').addClass('pkpButton ai-declaration-remove-prompt');
         $('#aiDeclarationPromptsList').append($row.append($ta).append($rm));
         updateRemoveButtons();
     });
@@ -331,53 +333,98 @@
     });
 
     // =========================================================================
-    // OJS 3.4 Vue integration: hook into root:mounted to inject form + validate
+    // OJS Vue integration: hook into root:mounted to inject form + validate
+    // Works with both Vue 2 (OJS 3.4) and Vue 3 (OJS 3.5).
     // =========================================================================
 
-    // pkp.eventBus is available in <head> because build.js (STYLE_SEQUENCE_CORE)
+    function validateAndProceed(originalNextStep) {
+        var aiUsed = $('input[name="ai_used"]:checked').val() || '';
+        var $err   = $('#aiDeclClientError');
+        $err.hide();
+
+        if (window.aiDeclarationRequired && !aiUsed) {
+            $err.text($err.attr('data-msg-required') || 'La declaración es obligatoria.').show();
+            var s = document.getElementById('aiDeclarationSection');
+            if (s) { s.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+            return;
+        }
+
+        if (aiUsed && !_confirmedId && !_bypassed) {
+            $err.text($err.attr('data-msg-unconfirmed') || 'Debes registrar o vincular una declaración.').show();
+            var s = document.getElementById('aiDeclarationSection');
+            if (s) { s.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+            return;
+        }
+
+        if (typeof originalNextStep === 'function') {
+            originalNextStep();
+        }
+    }
+
+    // pkp.eventBus is available because build.js (STYLE_SEQUENCE_CORE)
     // loads before our script (STYLE_SEQUENCE_LATE).
     if (window.pkp && pkp.eventBus) {
         pkp.eventBus.$on('root:mounted', function (id, vm) {
 
-            // Inject the form when the aiDeclaration step becomes active.
-            // { immediate: true } handles the case where the wizard opens on this step.
+            // Guard: only act on the SubmissionWizardPage instance
+            if (!vm || typeof vm.$watch !== 'function') { return; }
+            // The SubmissionWizardPage has currentStep and steps; skip if not present
+            if (vm.steps === undefined && vm.currentStep === undefined) { return; }
+
+            // Watch for when the aiDeclaration step becomes active.
+            // vm.$watch works in both Vue 2 and Vue 3.
             vm.$watch(
                 function () { return vm.currentStep; },
                 function (step) {
                     if (step && step.id === 'aiDeclaration') {
-                        vm.$nextTick(function () { injectDeclarationForm(vm); });
+                        // Wait for Vue to update the DOM, then inject the form.
+                        if (typeof vm.$nextTick === 'function') {
+                            vm.$nextTick(function () { injectDeclarationForm(); });
+                        } else {
+                            setTimeout(injectDeclarationForm, 50);
+                        }
                     }
                 },
                 { immediate: true }
             );
 
-            // Override vm.nextStep to validate before leaving the aiDeclaration step.
-            var _originalNextStep = vm.nextStep.bind(vm);
-            vm.nextStep = function () {
-                if (vm.currentStep && vm.currentStep.id === 'aiDeclaration') {
-                    var aiUsed = $('input[name="ai_used"]:checked').val() || '';
-                    var $err   = $('#aiDeclClientError');
-                    $err.hide();
-
-                    // If required, a radio button must be selected
-                    if (window.aiDeclarationRequired && !aiUsed) {
-                        $err.text($err.attr('data-msg-required') || 'La declaración es obligatoria.').show();
-                        var s = document.getElementById('aiDeclarationSection');
-                        if (s) { s.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+            // Intercept nextStep to validate before leaving the aiDeclaration step.
+            // In Vue 3, methods exposed from setup() are settable on the component proxy.
+            try {
+                var _originalNextStep = vm.nextStep ? vm.nextStep.bind(vm) : null;
+                vm.nextStep = function () {
+                    if (vm.currentStep && vm.currentStep.id === 'aiDeclaration') {
+                        validateAndProceed(_originalNextStep);
                         return;
                     }
-
-                    // If AI was used, a declaration must be confirmed (or bypassed)
-                    if (aiUsed && !_confirmedId && !_bypassed) {
-                        $err.text($err.attr('data-msg-unconfirmed') || 'Debes registrar o vincular una declaración.').show();
-                        var s = document.getElementById('aiDeclarationSection');
-                        if (s) { s.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
-                        return;
-                    }
-                }
-                _originalNextStep();
-            };
+                    if (_originalNextStep) { _originalNextStep(); }
+                };
+            } catch (e) {
+                // In some Vue 3 setups the proxy may reject direct assignment.
+                // Fall back to event delegation on the primary footer button.
+                $(document).on('click.aiDeclValidate', '.submissionWizard__footer .pkpButton--primary', function (ev) {
+                    if (!vm.currentStep || vm.currentStep.id !== 'aiDeclaration') { return; }
+                    ev.stopImmediatePropagation();
+                    ev.preventDefault();
+                    var original = function () {
+                        $(document).off('click.aiDeclValidate');
+                        $(ev.target).trigger('click');
+                    };
+                    validateAndProceed(original);
+                });
+            }
         });
+    } else {
+        // Fallback without eventBus: use MutationObserver to detect form + primary button
+        var _observer = new MutationObserver(function () {
+            if (document.getElementById('aiDeclarationSection') && !_initialized) {
+                _initialized = true;
+                initSection();
+            }
+        });
+        if (document.body) {
+            _observer.observe(document.body, { childList: true, subtree: true });
+        }
     }
 
 }(jQuery));

@@ -1,6 +1,6 @@
-# aiDeclaration — Plugin para OJS 3.4
+# aiDeclaration — Plugin para OJS 3.5
 
-Plugin genérico para Open Journal Systems **3.4** que integra un formulario de **declaración de transparencia en el uso de inteligencia artificial** en el flujo de envío de artículos. Utiliza la API de [declarador.usoeticoia.org](https://declarador.usoeticoia.org) para crear, registrar y verificar declaraciones.
+Plugin genérico para Open Journal Systems **3.5** que integra un formulario de **declaración de transparencia en el uso de inteligencia artificial** en el flujo de envío de artículos. Utiliza la API de [declarador.usoeticoia.org](https://declarador.usoeticoia.org) para crear, registrar y verificar declaraciones.
 
 ---
 
@@ -12,7 +12,7 @@ Plugin genérico para Open Journal Systems **3.4** que integra un formulario de 
 - [Configuración](#configuración)
 - [Flujo de uso](#flujo-de-uso)
   - [Autor — Paso 6 del wizard de envío](#autor--paso-6-del-wizard-de-envío)
-  - [Editor — Panel de publicación](#editor--panel-de-publicación)
+  - [Editor — Panel de publicación en el dashboard](#editor--panel-de-publicación-en-el-dashboard)
   - [Vista pública del artículo](#vista-pública-del-artículo)
 - [Arquitectura técnica](#arquitectura-técnica)
 
@@ -20,7 +20,7 @@ Plugin genérico para Open Journal Systems **3.4** que integra un formulario de 
 
 ## Características
 
-- **Paso dedicado en el wizard de envío (OJS 3.4)**: el plugin inyecta un paso "Declaración de IA" entre la revisión y la confirmación del envío. El autor declara si usó IA generativa con tres opciones:
+- **Paso dedicado en el wizard de envío (OJS 3.5)**: el plugin inyecta un paso "Declaración de IA" entre la revisión y la confirmación del envío. El autor declara si usó IA generativa con tres opciones:
   - *Sí usé IA* — completa un formulario detallado (herramienta, prompts, tipos de uso, nivel de revisión humana, licencia) y crea la declaración en la API
   - *No usé IA* — registra una declaración de no-uso
   - *Ya tengo una declaración* — busca y vincula una declaración existente por ID o hash
@@ -29,7 +29,7 @@ Plugin genérico para Open Journal Systems **3.4** que integra un formulario de 
 
 - **Fallback ante fallos de la API**: si la API falla 3 veces consecutivas, el autor puede continuar el envío. El sistema marca la publicación como "declaración pendiente" para que el editor la registre posteriormente.
 
-- **Panel editorial (workflow)**: pestaña "Declaración IA" en el panel de publicación que permite a editores y gestores:
+- **Panel editorial (dashboard OJS 3.5)**: elemento "Declaración IA" bajo el menú "Publicación" del panel lateral del flujo editorial que permite a editores y gestores:
   - Ver el estado (IA usada / Sin IA), el hash de validación y la URL de la declaración
   - Actualizar la URL de la declaración
   - Registrar declaraciones en artículos publicados antes de la instalación del plugin
@@ -45,7 +45,7 @@ Plugin genérico para Open Journal Systems **3.4** que integra un formulario de 
 
 | Componente | Versión |
 |------------|---------|
-| Open Journal Systems | 3.4.x |
+| Open Journal Systems | 3.5.x |
 | PHP | 8.0 o superior |
 | Cuenta en declarador.usoeticoia.org | API Key válida |
 
@@ -86,7 +86,7 @@ Después de configurar, usar el botón **"Probar conexión"** para verificar que
 
 ### Autor — Paso 6 del wizard de envío
 
-En OJS 3.4 el wizard de envío es una SPA Vue. El plugin inyecta un paso "Declaración de IA" (paso 6) entre la revisión del envío (paso 5) y la confirmación (paso 7).
+En OJS 3.5 el wizard de envío es una SPA Vue 3. El plugin inyecta un paso "Declaración de IA" (paso 6) entre la revisión del envío (paso 5) y la confirmación (paso 7).
 
 El formulario de declaración aparece al llegar al paso 6.
 
@@ -114,22 +114,22 @@ El formulario de declaración aparece al llegar al paso 6.
 
 ---
 
-### Editor — Panel de publicación
+### Editor — Panel de publicación en el dashboard
 
-En el panel de flujo editorial, pestaña **"Declaración IA"**:
+En OJS 3.5, el flujo editorial es una SPA Vue 3 en el dashboard. El plugin añade un elemento **"Declaración IA"** bajo el menú **"Publicación"** del panel lateral usando las APIs oficiales `pkp.registry.registerComponent` y `pkp.registry.storeExtend`.
 
 **Artículo con declaración:**
 - Se muestra el badge de estado (verde: IA usada / gris: sin IA)
 - Hash de validación (solo lectura)
 - Campo para actualizar la URL de la declaración
-- El botón "Guardar cambios" actualiza la URL; si el artículo está publicado y tiene una declaración real vinculada, el backend rechaza la edición
+- El botón "Guardar URL" actualiza la URL; si el artículo está publicado y tiene una declaración real vinculada, el backend rechaza la edición
 
 **Artículo sin declaración** (publicado antes de la instalación o bypass activado):
 - Formulario para registrar la declaración:
   - Seleccionar si se usó IA (Sí / No)
   - Introducir la URL de la declaración
   - Opcionalmente introducir el ID (el sistema obtiene el hash desde la API automáticamente)
-- Al guardar, la página se recarga mostrando la declaración registrada
+- Al guardar, el panel recarga mostrando la declaración registrada
 
 **Aviso de bypass:**
 - Si el autor activó el bypass durante el envío (por fallos de la API), aparece un aviso naranja indicando que la declaración está pendiente de registro
@@ -146,23 +146,6 @@ En la página de detalle del artículo publicado se muestra la sección **"Decla
 
 ---
 
-## Arquitectura técnica
-
-El wizard de envío de OJS 3.4 es una **SPA Vue** con render pre-compilado (`SubmissionWizardPage`). El HTML generado por Smarty es reemplazado por Vue al montar, por lo que las técnicas clásicas de OJS 3.3 (hooks de template que añaden HTML dentro del wizard) no funcionan.
-
-### Estrategia de inyección
-
-El plugin usa el hook `TemplateManager::display` para:
-
-1. **Inyectar el paso en el estado Vue** vía `$templateMgr->setState(['steps' => $steps])` — el estado se serializa en el `<body>` para `pkp.registry.init()`.
-2. **Pre-renderizar el formulario HTML** con `$templateMgr->fetch()` y exponerlo como `window.aiDeclarationFormHTML` mediante un script inline.
-3. **Enqueue el script JS** (`declarationWizard.js`) que:
-   - Escucha `pkp.eventBus.$on('root:mounted', fn)` para obtener la instancia Vue
-   - Observa `vm.$watch(() => vm.currentStep, fn)` para detectar la llegada al paso `aiDeclaration`
-   - Localiza el componente `<step id="aiDeclaration">` recorriendo `vm.$children` recursivamente (el prop `id` de Vue no se refleja como atributo HTML en el DOM)
-   - Inyecta el formulario HTML dentro del panel del paso vía `insertAdjacentHTML`
-   - Intercepta `vm.nextStep` para validar el formulario antes de avanzar
-
 ### Archivos principales
 
 | Archivo | Propósito |
@@ -172,9 +155,9 @@ El plugin usa el hook `TemplateManager::display` para:
 | `classes/DeclaradorApiClient.php` | Cliente HTTP para la API de declarador.usoeticoia.org |
 | `classes/DeclarationDataMapper.php` | Mapea los datos del formulario al payload de la API |
 | `form/AiDeclarationSettingsForm.php` | Formulario de configuración del plugin |
-| `assets/js/declarationWizard.js` | Lógica Vue para inyección y validación en el wizard |
+| `assets/js/declarationWizard.js` | Lógica Vue 2/3 para inyección y validación en el wizard |
+| `assets/js/workflowDashboard.js` | Componente Vue 3 del panel editorial (OJS 3.5 dashboard) |
 | `assets/css/aiDeclaration.css` | Estilos del formulario y del badge |
 | `templates/declarationForm.tpl` | HTML del formulario del wizard (pre-renderizado en servidor) |
-| `templates/workflowDeclaration.tpl` | Pestaña del panel editorial |
 | `templates/articleDeclaration.tpl` | Badge en la vista pública del artículo |
 | `templates/settingsForm.tpl` | Formulario de ajustes del plugin |

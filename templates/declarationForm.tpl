@@ -81,7 +81,7 @@
         {* ---- No-AI panel ---- *}
         <div id="aiDeclarationNoAiMsg" class="ai-declaration-noai-msg" style="display:none;">
             <p>{translate key="plugins.generic.aiDeclaration.form.noAiConfirm"}</p>
-            <button type="button" id="aiDeclarationNoAiBtn" class="pkpButton"
+            <button type="button" id="aiDeclarationNoAiBtn" class="pkpButton inline-flex relative items-center gap-x-1 text-lg-semibold bg-primary border-transparent text-on-dark hover:bg-hover hover:text-on-dark disabled:bg-disabled disabled:text-disabled py-[0.4375rem] px-3 border rounded"
                 data-text-default="{translate key="plugins.generic.aiDeclaration.form.action.registerNoAi"}"
                 data-text-loading="{translate key="plugins.generic.aiDeclaration.form.action.registering"}">
                 {translate key="plugins.generic.aiDeclaration.form.action.registerNoAi"}
@@ -103,7 +103,7 @@
                         class="pkpFormField__input"
                         style="flex:1; min-width:200px;"
                         placeholder="{translate key="plugins.generic.aiDeclaration.form.existingDeclarationId.placeholder"}" />
-                    <button type="button" id="aiDeclarationFindBtn" class="pkpButton"
+                    <button type="button" id="aiDeclarationFindBtn" class="pkpButton inline-flex relative items-center gap-x-1 text-lg-semibold bg-primary border-transparent text-on-dark hover:bg-hover hover:text-on-dark disabled:bg-disabled disabled:text-disabled py-[0.4375rem] px-3 border rounded"
                         data-text-default="{translate key="plugins.generic.aiDeclaration.form.action.find"}"
                         data-text-loading="{translate key="plugins.generic.aiDeclaration.form.action.searching"}">
                         {translate key="plugins.generic.aiDeclaration.form.action.find"}
@@ -254,11 +254,11 @@
                             class="pkpFormField__input ai-declaration-prompt-input"
                             rows="2"
                             placeholder="{translate key="plugins.generic.aiDeclaration.form.prompt.placeholder"}"></textarea>
-                        <button type="button" class="pkpButton ai-declaration-remove-prompt" style="display:none;"
+                        <button type="button" class="pkpButton inline-flex relative items-center gap-x-1 text-lg-semibold text-primary border-light hover:text-hover disabled:text-disabled bg-secondary py-[0.4375rem] px-3 border rounded ai-declaration-remove-prompt" style="display:none;"
                             title="{translate key="plugins.generic.aiDeclaration.form.prompt.remove"}">&#x2715;</button>
                     </div>
                 </div>
-                <button type="button" class="pkpButton" id="aiDeclarationAddPrompt">
+                <button type="button" class="pkpButton inline-flex relative items-center gap-x-1 text-lg-semibold text-primary border-light hover:text-hover disabled:text-disabled bg-secondary py-[0.4375rem] px-3 border rounded" id="aiDeclarationAddPrompt">
                     + {translate key="plugins.generic.aiDeclaration.form.prompt.add"}
                 </button>
             </div>
@@ -360,7 +360,7 @@
 
             {* Create declaration button *}
             <div class="ai-declaration-action-row">
-                <button type="button" id="aiDeclarationCreateBtn" class="pkpButton ai-declaration-action-btn"
+                <button type="button" id="aiDeclarationCreateBtn" class="pkpButton inline-flex relative items-center gap-x-1 text-lg-semibold bg-primary border-transparent text-on-dark hover:bg-hover hover:text-on-dark disabled:bg-disabled disabled:text-disabled py-[0.4375rem] px-3 border rounded"
                     data-text-default="{translate key="plugins.generic.aiDeclaration.form.action.create"}"
                     data-text-loading="{translate key="plugins.generic.aiDeclaration.form.action.creating"}">
                     {translate key="plugins.generic.aiDeclaration.form.action.create"}
@@ -386,7 +386,7 @@
                     {/if}
                 {/if}
             </span>
-            <button type="button" id="aiDeclarationClearBtn" class="pkpButton ai-declaration-clear-btn">
+            <button type="button" id="aiDeclarationClearBtn" class="pkpButton inline-flex relative items-center gap-x-1 text-lg-semibold text-primary border-light hover:text-hover disabled:text-disabled bg-secondary py-[0.4375rem] px-3 border rounded ai-declaration-clear-btn">
                 {translate key="plugins.generic.aiDeclaration.form.action.change"}
             </button>
         </div>
@@ -406,7 +406,7 @@
             <p style="margin:0 0 0.8em; font-size:0.9em; color:#856404;">
                 {translate key="plugins.generic.aiDeclaration.error.apiUnavailableHint"}
             </p>
-            <button type="button" id="aiDeclBypassBtn" class="pkpButton"
+            <button type="button" id="aiDeclBypassBtn" class="pkpButton inline-flex relative items-center gap-x-1 text-lg-semibold text-primary border-light hover:text-hover disabled:text-disabled bg-secondary py-[0.4375rem] px-3 border rounded"
                 data-pending-text="{translate key="plugins.generic.aiDeclaration.form.bypass.pending"|escape:"html"}">
                 {translate key="plugins.generic.aiDeclaration.form.action.continueWithoutDeclaration"}
             </button>
